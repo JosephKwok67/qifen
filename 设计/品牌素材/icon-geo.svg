@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#1a1a1a" rx="40"/>
+  <!-- large circle 70% fill -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#333" stroke-width="1"/>
+  <path d="M100 30 A70 70 0 0 1 168 72" fill="none" stroke="#e8d5a3" stroke-width="2"/>
+  <path d="M168 72 L100 100 L100 30" fill="#e8d5a3" opacity="0.08"/>
+  <!-- diagonal division line -->
+  <line x1="40" y1="160" x2="160" y2="40" stroke="#e8d5a3" stroke-width="0.5" opacity="0.3"/>
+  <!-- 七 -->
+  <text x="65" y="145" font-family="system-ui" font-size="40" font-weight="300" fill="#e8d5a3" letter-spacing="4" opacity="0.9">七</text>
+  <!-- 分 -->
+  <text x="110" y="145" font-family="system-ui" font-size="40" font-weight="300" fill="#e8d5a3" letter-spacing="4" opacity="0.5">分</text>
+</svg>

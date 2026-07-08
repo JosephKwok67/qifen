@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#1a1a1a" rx="40"/>
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#333" stroke-width="3"/>
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#e8d5a3" stroke-width="3"
+    stroke-dasharray="330 141" transform="rotate(-90 100 100)"/>
+  <text x="100" y="115" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" 
+    font-size="52" font-weight="300" fill="#e8d5a3" letter-spacing="8">七分</text>
+  <text x="100" y="175" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif"
+    font-size="9" fill="#666" letter-spacing="3">EAT WELL · LIVE WELL</text>
+</svg>

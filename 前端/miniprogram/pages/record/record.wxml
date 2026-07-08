@@ -1,0 +1,49 @@
+<view class="page p-md">
+  <view class="section">
+    <text class="label">餐类</text>
+    <view class="meal-types mt-sm">
+      <view
+        class="meal-chip {{currentType === item.type ? 'active' : ''}}"
+        wx:for="{{mealTypes}}"
+        wx:key="type"
+        bindtap="selectType"
+        data-type="{{item.type}}"
+      >
+        <text>{{item.icon}} {{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section mt-lg">
+    <text class="label">吃了什么</text>
+    <textarea
+      class="input-area mt-sm"
+      placeholder="比如：白粥一碗、清蒸鱼、炒青菜..."
+      placeholder-style="color: var(--text-muted)"
+      value="{{content}}"
+      bindinput="onContentInput"
+      maxlength="500"
+      auto-height
+    />
+  </view>
+
+  <view class="section mt-lg">
+    <text class="label">照片（选填）</text>
+    <view class="photo-area mt-sm">
+      <block wx:if="{{photo}}">
+        <image class="photo-preview" src="{{photo}}" mode="aspectFill" />
+        <view class="photo-remove" bindtap="removePhoto">✕</view>
+      </block>
+      <view class="photo-add" wx:else bindtap="takePhoto">
+        <text class="photo-add-icon">📷</text>
+        <text class="caption">拍照或选择图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section mt-xl">
+    <button class="btn-primary btn-full" bindtap="submit" disabled="{{!content}}">
+      记录这一餐
+    </button>
+  </view>
+</view>

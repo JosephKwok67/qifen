@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f5f0e8" rx="40"/>
+  <!-- brush stroke 七 - horizontal -->
+  <path d="M30 80 Q50 55 95 60 Q130 62 170 50" fill="none" stroke="#2a1a0a" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
+  <path d="M30 80 Q50 60 95 62 Q130 63 170 55" fill="none" stroke="#2a1a0a" stroke-width="6" stroke-linecap="round" opacity="0.3"/>
+  <!-- brush stroke 七 - vertical -->
+  <path d="M125 60 Q120 90 115 130 Q112 150 108 170" fill="none" stroke="#2a1a0a" stroke-width="12" stroke-linecap="round" opacity="0.85"/>
+  <path d="M125 60 Q118 90 113 130 Q110 150 106 170" fill="none" stroke="#2a1a0a" stroke-width="5" stroke-linecap="round" opacity="0.25"/>
+  <!-- ink splatters -->
+  <circle cx="35" cy="72" r="3" fill="#2a1a0a" opacity="0.4"/>
+  <circle cx="160" cy="45" r="2" fill="#2a1a0a" opacity="0.3"/>
+  <circle cx="28" cy="88" r="1.5" fill="#2a1a0a" opacity="0.25"/>
+  <circle cx="170" cy="68" r="2" fill="#2a1a0a" opacity="0.2"/>
+  <!-- red seal stamp -->
+  <rect x="140" y="140" width="40" height="40" rx="6" fill="#c23b22" opacity="0.9"/>
+  <text x="160" y="168" text-anchor="middle" font-family="system-ui, serif" font-size="22" font-weight="700" fill="#f5f0e8">分</text>
+</svg>

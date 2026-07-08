@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #f7f5f0;
+  --color-bg-card: #ffffff;
+  --color-text: #3a3028;
+  --color-text-secondary: #8a7a6a;
+  --color-text-muted: #b5a99a;
+  --color-accent: #c4a882;
+  --color-accent-dark: #5a4a3a;
+  --color-border: #ebe5dc;
+  --color-divider: #f0ebe2;
+  --color-safe: #8fb996;
+  --color-warn: #d4a853;
+  --color-danger: #c97b6b;
+
+  --color-dark-bg: #1a1a1a;
+  --color-dark-bg-card: #2a2a2a;
+  --color-dark-text: #e8d5a3;
+  --color-dark-text-secondary: #a09880;
+  --color-dark-accent: #e8d5a3;
+  --color-dark-accent-dark: #c4a882;
+  --color-dark-border: #3a3a3a;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark body,
+.dark {
+  --color-bg: var(--color-dark-bg);
+  --color-bg-card: var(--color-dark-bg-card);
+  --color-text: var(--color-dark-text);
+  --color-text-secondary: var(--color-dark-text-secondary);
+  --color-accent: var(--color-dark-accent);
+  --color-accent-dark: var(--color-dark-accent-dark);
+  --color-border: var(--color-dark-border);
+  --color-divider: #2a2a2a;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-once {
+  0% { opacity: 0; transform: scale(0.95); }
+  60% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-card-in { animation: fadeInUp 0.35s ease-out; }
+.animate-pulse-once { animation: pulse-once 0.5s ease-out; }

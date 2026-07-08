@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 260" width="300" height="260">
+  <rect width="300" height="260" fill="#f7f5f0" rx="20"/>
+  <circle cx="150" cy="60" r="38" fill="none" stroke="#e8e0d4" stroke-width="5"/>
+  <circle cx="150" cy="60" r="38" fill="none" stroke="#c4a882" stroke-width="5"
+    stroke-dasharray="167 72" transform="rotate(-90 150 60)"/>
+  <text x="150" y="145" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" 
+    font-size="28" font-weight="500" fill="#5a4a3a" letter-spacing="5">七分</text>
+  <text x="150" y="185" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif"
+    font-size="14" fill="#5a4a3a" letter-spacing="4">十分太满，七分刚好</text>
+  <text x="150" y="212" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif"
+    font-size="12" fill="#a09080" letter-spacing="5">吃饭是这样，生活也是</text>
+</svg>

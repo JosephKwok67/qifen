@@ -1,0 +1,13 @@
+.page { min-height: 100vh; }
+.meal-types { display: flex; gap: 16rpx; flex-wrap: wrap; }
+.meal-chip { padding: 14rpx 28rpx; border-radius: 32rpx; background: var(--bg-card); border: 2rpx solid var(--border); font-size: 26rpx; color: var(--text-secondary); }
+.meal-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.input-area { width: 100%; min-height: 180rpx; padding: 24rpx; background: var(--bg-card); border-radius: 16rpx; font-size: 28rpx; color: var(--text); box-sizing: border-box; }
+.photo-area { position: relative; }
+.photo-add { width: 200rpx; height: 200rpx; border-radius: 16rpx; background: var(--bg-card); border: 2rpx dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12rpx; }
+.photo-add-icon { font-size: 48rpx; }
+.photo-preview { width: 200rpx; height: 200rpx; border-radius: 16rpx; }
+.photo-remove { position: absolute; top: -12rpx; left: 188rpx; width: 40rpx; height: 40rpx; border-radius: 20rpx; background: var(--status-danger); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22rpx; }
+.btn-full { width: 100%; }
+.mt-xl { margin-top: 60rpx; }
+button.btn-primary[disabled] { opacity: 0.4; }

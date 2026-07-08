@@ -1,0 +1,16 @@
+.page { min-height: 100vh; padding-bottom: 120rpx; }
+.hero { padding: 80rpx 48rpx 48rpx; }
+.hero-title { display: block; color: var(--text); }
+.hero-accent { display: block; color: var(--accent); }
+.hero-sub { display: block; margin-top: 16rpx; }
+.section { margin-top: 8rpx; }
+.px-md { padding: 0 40rpx; }
+.meal-list { margin-top: 8rpx; }
+.meal-card { margin: 12rpx 24rpx; }
+.meal-icon { font-size: 40rpx; width: 60rpx; text-align: center; }
+.meal-label { font-size: 28rpx; font-weight: 600; color: var(--text); }
+.meal-time { font-size: 22rpx; color: var(--text-muted); margin-top: 2rpx; }
+.meal-content { max-width: 320rpx; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meal-empty { opacity: 0.5; }
+.fab { position: fixed; bottom: 120rpx; right: 40rpx; width: 96rpx; height: 96rpx; border-radius: 48rpx; background: var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.12); z-index: 100; }
+.fab-icon { font-size: 48rpx; color: #fff; font-weight: 300; line-height: 1; }
