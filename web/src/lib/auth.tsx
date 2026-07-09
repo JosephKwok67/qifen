@@ -38,11 +38,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) return { error: error.message }
     if (data.user) {
-      await fetch(`${supabaseUrl}/rest/v1/profiles`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "apikey": supabaseKey, "Authorization": `Bearer ${supabaseKey}` },
-        body: JSON.stringify({ id: data.user.id, nickname, title: "健康新手", region: "广州" }),
+      // Use the authenticated client so the user's JWT is sent automatically;
+      // RLS policy auth.uid() = id will then allow the insert.
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: data.user.id,
+        nickname,
+        title: "健康新手",
+        region: "广州",
       })
+      if (profileError) {
+        // Non-fatal: user can still use the app and fill profile later.
+        console.warn("创建用户档案失败:", profileError.message)
+      }
     }
     return {}
   }, [])
