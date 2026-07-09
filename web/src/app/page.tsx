@@ -77,31 +77,30 @@ export default function Dashboard() {
     saveMeal({ id: mealId, type:mealType, content:foodContent.trim(), photo, date:today, createdAt:new Date().toISOString() })
     setFoodContent(""); setPhoto(""); refresh()
 
-    // Call AI API
+    // Call AI API via server route so the key stays on the server
     try {
-      const key = process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY || ""
-      if (key) {
-        const prompt = `你是一个专业的抗炎饮食营养师。请分析以下食物：${foodContent.trim()}\n\n返回JSON：{"score":0-100,"rating":"good/ok/caution","goodFindings":[],"concerns":[],"suggestion":"建议"}\n\n标准：Omega-3/抗氧化物/全谷物/发酵食品加分；油炸/加工肉/高糖/酒精扣分。`
-        const resp = await fetch("https://api.deepseek.com/v1/chat/completions", {
-          method:"POST", headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
-          body: JSON.stringify({ model:"deepseek-chat", messages:[{role:"user",content:prompt}], temperature:0.3, max_tokens:500 })
+      const resp = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: foodContent.trim() }),
+      })
+      if (resp.ok) {
+        const analysis = await resp.json()
+        setLastAnalysis({
+          score: analysis.score,
+          rating: analysis.rating,
+          goodFindings: analysis.goodFindings || [],
+          concerns: analysis.concerns || [],
+          suggestion: analysis.suggestion || "",
         })
-        if (resp.ok) {
-          const data = await resp.json()
-          const text = data.choices?.[0]?.message?.content || ""
-          const m = text.match(/\{[\s\S]*\}/)
-          if (m) {
-            const analysis = JSON.parse(m[0])
-            setLastAnalysis({ score: analysis.score, rating: analysis.rating, goodFindings: analysis.goodFindings||[], concerns: analysis.concerns||[], suggestion: analysis.suggestion||"" })
-            setEncourage(getEncourage(todayMeals.length+1, streak, analysis.score))
-            return
-          }
-        }
+        setEncourage(getEncourage(todayMeals.length + 1, streak, analysis.score))
+        return
       }
     } catch {}
     // fallback to local
-    const a = analyzeMeal(foodContent.trim()); setLastAnalysis(a)
-    setEncourage(getEncourage(todayMeals.length+1, streak, a.score))
+    const a = analyzeMeal(foodContent.trim())
+    setLastAnalysis(a)
+    setEncourage(getEncourage(todayMeals.length + 1, streak, a.score))
   }
   const handleActivitySubmit = () => {
     if (!actContent.trim()) return; const today = new Date().toISOString().slice(0,10)
@@ -140,12 +139,26 @@ export default function Dashboard() {
 
   if (!user) return (
     <div className="min-h-screen flex items-center justify-center px-6" style={{ background: bg, color: "var(--color-text)" }}>
-      <div className="text-center max-w-sm">
+      <div className="text-center max-w-sm w-full">
+        <div className="flex justify-center mb-5">
+          {/* 70% ring logo: 252°/360° arc representing "seven-tenths" */}
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="40" r="34" stroke="var(--color-border)" strokeWidth="8" />
+            <circle cx="40" cy="40" r="34" stroke="var(--color-accent)" strokeWidth="8" strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 34 * 0.7} ${2 * Math.PI * 34}`}
+              strokeDashoffset={-(2 * Math.PI * 34 * 0.125)}
+              transform="rotate(-90 40 40)" />
+          </svg>
+        </div>
         <div className="text-4xl font-bold mb-2" style={{ color: "var(--color-accent)" }}>七分</div>
         <div className="text-sm mb-8" style={{ color: "var(--color-text-secondary)" }}>十分太满，七分刚好。吃饭是这样，生活也是。</div>
-        <div className="rounded-2xl p-6" style={{ background: card }}>
-          <div className="text-sm mb-4" style={{ color: "var(--color-text-secondary)" }}>登录后开始记录你的饮食，获取AI分析和排行榜。</div>
-          <button onClick={() => router.push("/auth")} className="w-full py-3 rounded-xl text-sm font-semibold text-white" style={{ background: "var(--color-accent)" }}>登录 / 注册</button>
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: card, border: "1px solid var(--color-border)" }}>
+          <div className="text-sm mb-4 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+            登录后开始记录饮食，AI 帮你温柔地回顾每一天。
+          </div>
+          <button onClick={() => router.push("/auth")} className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-transform active:scale-[0.98]" style={{ background: "var(--color-accent)" }}>
+            登录 / 注册
+          </button>
         </div>
       </div>
     </div>
@@ -194,7 +207,7 @@ export default function Dashboard() {
 
         {lastAnalysis && (
           <div className="rounded-2xl p-4 mb-6" style={{ background:card, borderLeft:"4px solid "+SCORE_COLORS[lastAnalysis.rating] }}>
-            <div className="flex items-center gap-2 mb-3"><span>🤖</span><span className="text-xs font-semibold tracking-wider" style={{ color:"var(--color-text-muted)" }}>AI 饮食分析 {lastAnalysis && (lastAnalysis as any).source === "deepseek" ? "· DeepSeek" : ""}</span><span className="ml-auto text-sm font-bold" style={{ color:SCORE_COLORS[lastAnalysis.rating] }}>{lastAnalysis.score} 分</span></div>
+            <div className="flex items-center gap-2 mb-3"><span>🤖</span><span className="text-xs font-semibold tracking-wider" style={{ color:"var(--color-text-muted)" }}>AI 饮食分析 {(lastAnalysis as any).source === "deepseek" ? "· DeepSeek" : "· 本地分析"}</span><span className="ml-auto text-sm font-bold" style={{ color:SCORE_COLORS[lastAnalysis.rating] }}>{lastAnalysis.score} 分</span></div>
             {lastAnalysis.goodFindings.length>0&&(<div className="mb-2"><div className="text-xs font-medium mb-1" style={{ color:SCORE_COLORS.good }}>✅ 做得好的</div>{lastAnalysis.goodFindings.map((f,i)=><div key={i} className="text-xs leading-relaxed ml-1" style={{ color:"var(--color-text-secondary)" }}>· {f}</div>)}</div>)}
             {lastAnalysis.concerns.length>0&&(<div className="mb-2"><div className="text-xs font-medium mb-1" style={{ color:SCORE_COLORS.caution }}>⚠️ 需注意</div>{lastAnalysis.concerns.map((c,i)=><div key={i} className="text-xs leading-relaxed ml-1" style={{ color:"var(--color-text-secondary)" }}>· {c}</div>)}</div>)}
             <div className="mt-3 pt-3 text-xs leading-relaxed" style={{ color:"var(--color-accent-dark)", borderTop:"1px solid var(--color-divider)" }}>💡 {lastAnalysis.suggestion}</div>
