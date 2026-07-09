@@ -9,6 +9,7 @@ import { RECIPES, type Recipe } from "@/lib/recipes"
 import { loadShared, addShared, getRecipeBonus } from "@/lib/sharedRecipes"
 import { useI18n, type Locale } from "@/lib/i18n"
 import { useAuth } from "@/lib/auth"
+import { uploadMealPhoto, deleteMealPhoto } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
 const MEAL_TYPES = [
@@ -34,6 +35,8 @@ export default function Dashboard() {
   const [mealType, setMealType] = useState<"breakfast"|"lunch"|"dinner"|"snack">("lunch")
   const [foodContent, setFoodContent] = useState("")
   const [photo, setPhoto] = useState("")
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoUploading, setPhotoUploading] = useState(false)
   const [dark, setDark] = useState(false)
   const [lastAnalysis, setLastAnalysis] = useState<Analysis | null>(null)
   const [wellness, setWellness] = useState<DailyWellness>({ foodScore:0, activityScore:0, wellnessScore:0, mood:{emoji:"😐",label:"Neutral",labelCN:"平平淡淡",summary:""}, rating:"ok" })
@@ -68,14 +71,29 @@ export default function Dashboard() {
 
   const handlePhoto = () => {
     const input = document.createElement("input"); input.type = "file"; input.accept = "image/*"
-    input.onchange = (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => setPhoto(reader.result as string); reader.readAsDataURL(file) }
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      // Show a local preview immediately while uploading
+      const reader = new FileReader()
+      reader.onload = () => setPhoto(reader.result as string)
+      reader.readAsDataURL(file)
+      setPhotoFile(file)
+    }
     input.click()
   }
   const handleFoodSubmit = async () => {
     if (!foodContent.trim()) return; const today = new Date().toISOString().slice(0,10)
+    let photoUrl = photo
+    if (photoFile && user) {
+      setPhotoUploading(true)
+      const uploaded = await uploadMealPhoto(user.id, photoFile)
+      setPhotoUploading(false)
+      if (uploaded) photoUrl = uploaded
+    }
     const mealId = Date.now().toString(36)+Math.random().toString(36).slice(2,6)
-    saveMeal({ id: mealId, type:mealType, content:foodContent.trim(), photo, date:today, createdAt:new Date().toISOString() })
-    setFoodContent(""); setPhoto(""); refresh()
+    saveMeal({ id: mealId, type:mealType, content:foodContent.trim(), photo: photoUrl, date:today, createdAt:new Date().toISOString() })
+    setFoodContent(""); setPhoto(""); setPhotoFile(null); refresh()
 
     // Call AI API via server route so the key stays on the server
     try {
@@ -108,7 +126,11 @@ export default function Dashboard() {
     setEncourage(getEncourage(todayMeals.length, streak, wellness.wellnessScore))
     setActContent(""); refresh()
   }
-  const handleDeleteMeal = (id: string) => { deleteMeal(id); setLastAnalysis(null); refresh() }
+  const handleDeleteMeal = async (id: string) => {
+    const meal = todayMeals.find(m => m.id === id) || getMealsByDate(new Date().toISOString().slice(0,10)).find(m => m.id === id)
+    if (meal?.photo) await deleteMealPhoto(meal.photo)
+    deleteMeal(id); setLastAnalysis(null); refresh()
+  }
   const handleDeleteActivity = (id: string) => { deleteActivity(id); refresh() }
   const toggleDay = (date: string) => { if (expanded===date) { setExpanded(null); return }; setExpanded(date); setExpandedData((prev)=>({...prev,[date]:{meals:getMealsByDate(date),activities:getActivitiesByDate(date)}})) }
   const toggleTheme = () => { const el = document.documentElement; const isDark = !el.classList.contains("dark"); if (isDark) el.classList.add("dark"); else el.classList.remove("dark"); localStorage.setItem("qifen-theme",isDark?"dark":"light"); setDark(isDark) }
@@ -218,8 +240,8 @@ export default function Dashboard() {
         <div className="rounded-2xl p-4 mb-4" style={{ background:card }}>
           <div className="text-xs font-semibold tracking-wider mb-3" style={{ color:"var(--color-text-muted)" }}>🍽 记录饮食</div>
           <div className="flex gap-2 mb-3 flex-wrap">{MEAL_TYPES.map(mt=><button key={mt.type} onClick={()=>setMealType(mt.type)} className="px-3.5 py-1.5 rounded-full text-xs font-medium border" style={{ background:mealType===mt.type?"var(--color-accent)":"transparent",color:mealType===mt.type?"#fff":"var(--color-text-secondary)",borderColor:mealType===mt.type?"var(--color-accent)":"var(--color-border)" }}>{mt.icon} {t(mt.labelKey)}</button>)}</div>
-          <div className="flex gap-2"><input className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ background:bg,color:"var(--color-text)" }} placeholder={t("quick.placeholder")} value={foodContent} onChange={e=>setFoodContent(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")handleFoodSubmit()}} /><button onClick={handlePhoto} className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0" style={{ background:bg }}>{photo?"✅":"📷"}</button><button onClick={handleFoodSubmit} disabled={!foodContent.trim()} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shrink-0" style={{ background:"var(--color-accent)",opacity:foodContent.trim()?1:0.4 }}>{t("quick.submit")}</button></div>
-          {photo&&(<div className="mt-3 relative w-20 h-20"><img src={photo} alt="preview" className="w-20 h-20 rounded-xl object-cover" /><button onClick={()=>setPhoto("")} className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs" style={{ background:"var(--color-danger)" }}>✕</button></div>)}
+          <div className="flex gap-2"><input className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ background:bg,color:"var(--color-text)" }} placeholder={t("quick.placeholder")} value={foodContent} onChange={e=>setFoodContent(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")handleFoodSubmit()}} /><button onClick={handlePhoto} className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 relative" style={{ background:bg }}>{photoUploading?<span className="inline-block w-4 h-4 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin"/>:(photo?"✅":"📷")}</button><button onClick={handleFoodSubmit} disabled={!foodContent.trim() || photoUploading} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shrink-0" style={{ background:"var(--color-accent)",opacity:foodContent.trim()&&!photoUploading?1:0.4 }}>{t("quick.submit")}</button></div>
+          {photo&&(<div className="mt-3 relative w-20 h-20"><img src={photo} alt="preview" className="w-20 h-20 rounded-xl object-cover" /><button onClick={()=>{setPhoto("");setPhotoFile(null)}} className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs" style={{ background:"var(--color-danger)" }}>✕</button></div>)}
         </div>
 
         <div className="rounded-2xl p-4 mb-6" style={{ background:card }}>
