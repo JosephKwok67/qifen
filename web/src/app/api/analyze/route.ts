@@ -4,8 +4,10 @@ const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY || ""
 const DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
 
 export async function POST(req: Request) {
+  let content = ""
   try {
-    const { content } = await req.json()
+    const body = await req.json()
+    content = body.content || ""
     if (!content?.trim()) return NextResponse.json({ error: "内容为空" }, { status: 400 })
 
     if (!DEEPSEEK_KEY) {
@@ -59,6 +61,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ...JSON.parse(jsonMatch[0]), source: "deepseek" })
   } catch {
     const { analyzeMeal } = await import("@/lib/analyzer")
-    const text = ""; return NextResponse.json({ ...analyzeMeal(text), source: "local-fallback" })
+    return NextResponse.json({ ...analyzeMeal(content), source: "local-fallback" })
   }
 }
